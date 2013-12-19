@@ -1,0 +1,782 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>使你的Navigation Bar难以置信地兼容iOS6/7 - Alvin's Blog</title>
+  <meta name="author" content="alvin">
+
+  
+  <meta name="description" content="自定义UI控件的外观是iOS开发者经常遇到的问题,再加上烦人的系统兼容,足够你研究一阵子了. 是时候解决这个痛点了! 我们就先从UINavigationBar开始吧~ iOS中默认的导航栏
+设置导航栏的背景颜色
+在导航栏中使用背景图片
+导航栏与状态栏
+定制返回按钮的颜色
+修改导航栏标题的字体 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://goldfish0506.github.io/blog/2013/12/19/custom-navigation-bar">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css"/>
+  <link href="/atom.xml" rel="alternate" title="Alvin's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Alvin's Blog</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:goldfish0506.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">使你的Navigation Bar难以置信地兼容iOS6/7</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-19T15:30:20+08:00" pubdate data-updated="true">Dec 19<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>自定义UI控件的外观是iOS开发者经常遇到的问题,再加上烦人的系统兼容,足够你研究一阵子了.</p>
+
+<p>是时候解决这个痛点了! 我们就先从UINavigationBar开始吧~</p>
+
+<!-- more -->
+
+
+<ul>
+<li><a href="#anchor1">iOS中默认的导航栏</a></li>
+<li><a href="#anchor2">设置导航栏的背景颜色</a></li>
+<li><a href="#anchor3">在导航栏中使用背景图片</a></li>
+<li><a href="#anchor4">导航栏与状态栏</a></li>
+<li><a href="#anchor5">定制返回按钮的颜色</a></li>
+<li><a href="#anchor6">修改导航栏标题的字体</a></li>
+<li><a href="#anchor7">修改导航栏标题为图片</a></li>
+<li><a href="#anchor8">添加多个按钮</a></li>
+<li><a href="#anchor9">修改状态栏的风格</a></li>
+<li><a href="#anchor10">隐藏状态栏</a></li>
+<li><a href="#anchor11">接下来?</a></li>
+</ul>
+
+
+<h2><span id="anchor1">iOS中默认的导航栏</span></h2>
+
+<p><img src="/images/article/custom_navigation_bar/contrast_default_navigation_bar.png"></p>
+
+<h2><span id="anchor2">设置导航栏的背景颜色</span></h2>
+
+<p>在iOS 7中，不再使用<code>tintColor</code>属性来设置导航栏的颜色，而是使用<code>barTintColor</code>属性来修改背景色。我们可以在<code>AppDelegate.m</code>文件中 定义方法<code>- (void)customizeAppearance</code>里面添加如下代码来修改颜色,并在<code>didFinishLaunchingWithOptions:</code>中调用.</p>
+
+<p>首先我们先定义个宏,来帮助我们设置颜色:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="cp">#define UIColorFromRGB(rgbValue) \</span>
+</span><span class='line'><span class="cp">[UIColor colorWithRed:((float)((rgbValue &amp; 0xFF0000) &gt;&gt; 16))/255.0 \</span>
+</span><span class='line'><span class="cp">                green:((float)((rgbValue &amp; 0xFF00) &gt;&gt; 8))/255.0 \</span>
+</span><span class='line'><span class="cp">                 blue:((float)(rgbValue &amp; 0xFF))/255.0 alpha:1.0]</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">BOOL</span><span class="p">)</span><span class="nf">application:</span><span class="p">(</span><span class="n">UIApplication</span> <span class="o">*</span><span class="p">)</span><span class="nv">application</span> <span class="nf">didFinishLaunchingWithOptions:</span><span class="p">(</span><span class="n">NSDictionary</span> <span class="o">*</span><span class="p">)</span><span class="nv">launchOptions</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">self</span> <span class="n">customizeAppearance</span><span class="p">];</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">YES</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">customizeAppearance</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="p">[[</span><span class="n">UINavigationBar</span> <span class="n">appearance</span><span class="p">]</span> <span class="nl">setBarTintColor:</span><span class="n">UIColorFromRGB</span><span class="p">(</span><span class="mh">0x0099cc</span><span class="p">)];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在iOS6中请使用:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">[[</span><span class="n">UINavigationBar</span> <span class="n">appearance</span><span class="p">]</span> <span class="nl">setTintColor:</span><span class="n">UIColorFromRGB</span><span class="p">(</span><span class="mh">0x0099cc</span><span class="p">)];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<table>
+    <caption><strong>Table 1-1 </strong>Contrast</caption>
+    <tr>
+        <th></th>
+        <th>ios7</th>
+        <th>ios6</th>
+    </tr>
+    <tr>
+        <td>Bar style</td>
+        <td>Translucent light (default) or translucent dark.</td>
+        <td>Opaque gradient blue (default) or opaque black.</td>
+    </tr>
+    <tr>
+        <td>Translucent</td>
+        <td>Default YES</td>
+        <td>Default NO</td>
+    </tr>
+    <tr>
+        <td>Appearance</td>
+        <td>底部有一像素的线</td>
+        <td>底部边缘有投影</td>
+    </tr>
+    <tr>
+        <td>Tinting</td>
+        <td>
+            tintColor 用来设置bar button items <br>
+            barTintColor 用来设置bar的背景色
+        </td>
+        <td>tintColor 用来设置bar的背景色</td>
+    </tr>
+</table>
+
+
+<br>
+
+
+<p>iOS7默认情况下，导航栏的translucent属性为YES.并对导航栏做模糊处理。
+你可以在对应的ViewController中设置translucent.</p>
+
+<p>而在iOS6及以前默认为NO,如果barStyle设置为UIBarStyleBlackTranslucent 那么translucent属性将总是YES.
+如下图，是translucent值为NO和YES的对比效果：</p>
+
+<p>iOS7:</p>
+
+<p><img src="/images/article/custom_navigation_bar/ios7_contrast-_translucent_navigation_bar.png" alt="default_navigation_ios7"/></p>
+
+<p>iOS6:</p>
+
+<p><img src="/images/article/custom_navigation_bar/ios6_contrast-_translucent_navigation_bar.png" alt="default_navigation_ios7"/></p>
+
+<h2><span id="anchor3">在导航栏中使用背景图片</span></h2>
+
+<p>如果想要获得更惊艳的效果,那么你需要提供一张图片作为背景.你可以用以下方法设置背景图片:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">[[</span><span class="n">UINavigationBar</span> <span class="n">appearance</span><span class="p">]</span> <span class="nl">setBackgroundImage:</span><span class="p">[</span><span class="n">UIImage</span> <span class="nl">imageNamed:</span><span class="s">@&quot;navigation_bar_bg&quot;</span><span class="p">]</span> <span class="nl">forBarMetrics:</span><span class="n">UIBarMetricsDefault</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>一般情况下你可能会用这样一张图片(320x44)</p>
+
+<p><img src="/images/article/custom_navigation_bar/navigation_bar_bg@2x.png" alt="default_navigation_ios7"/ style="width: 200px;"></p>
+
+<p>但实际上我们并不推荐这么使用,因为纹理相同的图片我们可以截取其中一段并平铺,这样做的好处是可以让你的App占用更少的空间,也为将来适配更多尺寸埋下伏笔.</p>
+
+<p>iOS 为我们提供了平铺图片的方法:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">UIEdgeInsets</span> <span class="n">insets</span> <span class="o">=</span> <span class="n">UIEdgeInsetsMake</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
+</span><span class='line'><span class="n">UIImage</span> <span class="o">*</span><span class="n">navigationBGImage</span> <span class="o">=</span> <span class="p">[[</span><span class="n">UIImage</span> <span class="nl">imageNamed:</span><span class="s">@&quot;navigation_bar_bg_pattern_44&quot;</span><span class="p">]</span>
+</span><span class='line'>                      <span class="nl">resizableImageWithCapInsets:</span><span class="n">insets</span><span class="p">];</span>
+</span><span class='line'><span class="p">[[</span><span class="n">UINavigationBar</span> <span class="n">appearance</span><span class="p">]</span> <span class="nl">setBackgroundImage:</span><span class="n">navigationBGImage</span> <span class="nl">forBarMetrics:</span><span class="n">UIBarMetricsDefault</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们可以选择平铺的范围,而边缘我们可以让图片保留原有的纹理.示意图:</p>
+
+<p><img src="/images/article/custom_navigation_bar/reszie_image_demo.png" alt="default_navigation_ios7"/ style="width: 200px;"></p>
+
+<h2><span id="anchor4">导航栏与状态栏</span></h2>
+
+<p>在iOS7中导航栏的高度从44 points(88 pixels)变为了64 points(128 pixels)。
+获得的效果也与我们提供的图片高度有关.</p>
+
+<p>你需要注意:</p>
+
+<table border="0" cellspacing="0" cellpadding="5">
+        <caption><strong>Table 1-2 </strong>Treatment of resizable background images for bars at the top of the screen</caption>
+        <thead>
+            <tr>
+                <th scope="col"><p>
+                    Height
+                </p></th>
+                <th scope="col"><p>
+                    Resizing treatment
+                </p></th>
+                <th scope="col"><p>
+                    Status bar background appearance
+                </p></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td scope="row"><p>
+                    44 points
+                </p></td>
+                <td><p>
+                    Horizontally resized as appropriate (the image is not vertically tiled or stretched).
+                </p></td>
+                <td><p>
+                    Black, if using <code class="code-voice">UIBarPositionTopAttached</code>.
+                </p><p>
+                Provided by the window background, if using <code class="code-voice">UIBarPositionTop</code>.
+            </p></td>
+        </tr>
+        <tr>
+            <td scope="row"><p>
+                Less than 44 points
+            </p></td>
+            <td><p>
+                Vertically resized to 64 points if using <code class="code-voice">UIBarPositionTopAttached</code> or 44 points if using <code class="code-voice">UIBarPositionTop</code>.
+            </p><p>
+            Horizontally resized as appropriate.
+        </p></td>
+        <td><p>
+            Provided by the bar background.
+        </p></td>
+    </tr>
+    <tr>
+        <td scope="row"><p>
+            64 points
+        </p></td>
+        <td><p>
+            Horizontally resized as appropriate.
+        </p></td>
+        <td><p>
+            Provided by the bar background.
+        </p></td>
+    </tr>
+    <tr>
+        <td scope="row"><p>
+            1 point
+        </p></td>
+        <td><p>
+            Vertically resized to 64 points if using <code class="code-voice">UIBarPositionTopAttached</code> or if using a navigation controller. Vertically resized to 44 points if using <code class="code-voice">UIBarPositionTop</code>.
+        </p><p>
+        Horizontally resized as appropriate.
+    </p></td>
+    <td><p>
+        Provided by the bar background.
+    </p></td>
+</tr>
+</tbody>
+</table>
+
+
+<br>
+
+
+<p>简单的说:</p>
+
+<p>如果你想让<code>Status Bar</code>保持iOS6的效果(黑色背景)请使用高度为<code>44points</code>的图片并只是水平方向平铺.</p>
+
+<p>如果你想让<code>Status Bar</code>保持iOS7的效果 请使用高度为<code>64points</code>的图片并保持水平方向平铺,或者使用高度为<code>44points</code>的图片,水平和垂直方向都进行平铺.</p>
+
+<p>我们来看下效果:</p>
+
+<p><img src="/images/article/custom_navigation_bar/iOS7_navigation_bar_pattern.png"/></p>
+
+<p><img src="/images/article/custom_navigation_bar/iOS6_navigation_bar_pattern.png"/></p>
+
+<p>我们发现使用64points的图片对iOS6的支持并不好,所以这里还是建议IOS6/7分别用44/64高度的图片.</p>
+
+<p>这里还是需要补充下:</p>
+
+<table>
+    <tr>
+        <td>iOS7</td>
+        <td>如果使用不透明的图片作为背景 并将translucent设为YES(默认) 那么系统会为图片设置一个小于1.0的不透明度 <br>
+                若要获得不透明的效果 请将并将translucent设为NO <br>
+            如果使用透明的图片作为背景 且将translucent设为NO 系统会提供一个以barTintColor为颜色的不透明的背景 <br>
+            若barTintColor为nil的话,会根据bar style来改变背景 UIBarStyleBlack &#8211;> 黑色 UIBarStyleDefault &#8211;>白色
+        </td>
+    </tr>
+    <tr>
+        <td>iOS6</td>
+        <td>
+            如果使用不透明图片作为背景 并将translucent设为NO(默认) status bar会用图片的主色调作为背景 <br>
+            如果使用不透明图片作为背景 并将translucent设为YES     status bar会变为黑色背景 <br>
+                此时若不设background color 则系统会为图片设置一个小于1.0的不透明度 <br>
+                若设置background color 则navigation bar 不透明 <br>
+            如果使用透明图片作为背景 并将translucent设为NO(默认) 系统会为navigation bar 提供一个以tintColor为颜色的背景<br>
+                若要获得透明效果 请将translucent设为YES
+        </td>
+    </tr>
+</table>
+
+
+<br>
+
+
+<p>Tips:</p>
+
+<blockquote><p>iOS6在导航栏下方有系统提供的阴影,你可以替换成自己的图片,或者将它干掉:</p></blockquote>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">[[</span><span class="n">UINavigationBar</span> <span class="n">appearance</span><span class="p">]</span> <span class="nl">setShadowImage:</span> <span class="p">[[</span><span class="n">UIImage</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">]];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在iOS7中Status Bar是透明的,我们的视图会与Status bar有所重合.在这里我们需要注意视图的Layout.
+在有导航栏的界面我们需要根据不同的情况进行处理:</p>
+
+<table>
+    <caption><strong>Table 1-3 </strong>Status bar & Translucent</caption>
+    <tr>
+        <th>Translucent</th>
+        <th>iOS7</th>
+        <th>iOS6</th>
+    </tr>
+    <tr>
+        <td>YES</td>
+        <td>视图从Status bar <code>顶部</code>算起</td>
+        <td>视图从Status bar <code>底部</code>算起</td>
+    </tr>
+    <tr>
+        <td>NO</td>
+        <td>视图从Navigation bar <code>底部</code>算起</td>
+        <td>视图从Navigation bar <code>底部</code>算起</td>
+    </tr>
+</table>
+
+
+<br>
+
+
+<p>我们来看一下效果, 首先创建一个Label:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">UILabel</span> <span class="o">*</span><span class="n">myLable</span> <span class="o">=</span> <span class="p">[[</span><span class="n">UILabel</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithFrame:</span><span class="n">CGRectMake</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">320</span><span class="p">,</span> <span class="mi">21</span><span class="p">)];</span>
+</span><span class='line'><span class="p">[</span><span class="n">myLable</span> <span class="nl">setText:</span><span class="s">@&quot;My Test Label&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">view</span> <span class="nl">addSubview:</span><span class="n">myLable</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/article/custom_navigation_bar/iOS7_navigation_bar_status_bar.png"/></p>
+
+<p><img src="/images/article/custom_navigation_bar/iOS6_navigation_bar_status_bar.png"/></p>
+
+<p>Tips:</p>
+
+<blockquote><p>所以在进行开发时我们要从充分虑到视图的Layout,建议你的ViewController都继承自基类BaseViewController,并在其中做layout处理.</p></blockquote>
+
+<p>你可以用如下方法判断iOS版本:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="cp">#define OS_PRIOR_IOS_7 (floor(NSFoundationVersionNumber) &lt;= NSFoundationVersionNumber_iOS_6_1)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="n">OS_PRIOR_IOS_7</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// Load resources for iOS 6.1 or earlier</span>
+</span><span class='line'><span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// Load resources for iOS 7 or later</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2><span id="anchor5">定制返回按钮的颜色</span></h2>
+
+<p>iOS7:</p>
+
+<p>导航栏上的按钮都是无边框的。要想给返回按钮着色，可以使用tintColor属性。如下代码所示：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">[[</span><span class="n">UINavigationBar</span> <span class="n">appearance</span><span class="p">]</span> <span class="nl">setTintColor:</span><span class="p">[</span><span class="n">UIColor</span> <span class="n">whiteColor</span><span class="p">]];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果想要用自己的图片替换返回图标，可以设置图片的<code>backIndicatorImage</code>和<code>backIndicatorTransitionMaskImage</code>。如下代码所示：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">[[</span><span class="n">UINavigationBar</span> <span class="n">appearance</span><span class="p">]</span> <span class="nl">setBackIndicatorImage:</span><span class="p">[</span><span class="n">UIImage</span> <span class="nl">imageNamed:</span><span class="s">@&quot;back_btn.png&quot;</span><span class="p">]];</span>
+</span><span class='line'><span class="p">[[</span><span class="n">UINavigationBar</span> <span class="n">appearance</span><span class="p">]</span> <span class="nl">setBackIndicatorTransitionMaskImage:</span><span class="p">[</span><span class="n">UIImage</span> <span class="nl">imageNamed:</span><span class="s">@&quot;back_btn.png&quot;</span><span class="p">]];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/article/custom_navigation_bar/IOS7_navigation_bar_cutom_back_btn.png"/></p>
+
+<p>iOS6:</p>
+
+<p>导航栏上的按钮都是有边框的。要想改变返回按钮UI, 可以使用以下方法：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">NSDictionary</span> <span class="o">*</span><span class="n">barItemAttributes</span> <span class="o">=</span> <span class="p">[</span><span class="n">NSDictionary</span> <span class="nl">dictionaryWithObjectsAndKeys:</span>
+</span><span class='line'>                               <span class="n">UIColorFromRGB</span><span class="p">(</span><span class="mh">0xffffff</span><span class="p">),</span> <span class="n">UITextAttributeTextColor</span><span class="p">,</span>
+</span><span class='line'>                               <span class="n">UIColorFromRGB</span><span class="p">(</span><span class="mh">0x000000</span><span class="p">),</span> <span class="n">UITextAttributeTextShadowColor</span><span class="p">,</span>
+</span><span class='line'>                               <span class="p">[</span><span class="n">NSValue</span> <span class="nl">valueWithUIOffset:</span><span class="n">UIOffsetMake</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span> <span class="n">UITextAttributeTextShadowOffset</span><span class="p">,</span>
+</span><span class='line'>                               <span class="p">[</span><span class="n">UIFont</span> <span class="nl">fontWithName:</span><span class="s">@&quot;AmericanTypewriter&quot;</span> <span class="nl">size:</span><span class="mf">0.0</span><span class="p">],</span> <span class="n">UITextAttributeFont</span><span class="p">,</span>
+</span><span class='line'>                               <span class="nb">nil</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">[[</span><span class="n">UIBarButtonItem</span> <span class="n">appearance</span><span class="p">]</span> <span class="nl">setTitleTextAttributes:</span><span class="n">barItemAttributes</span> <span class="nl">forState:</span><span class="n">UIControlStateNormal</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">UIImage</span> <span class="o">*</span><span class="n">buttonBack30</span> <span class="o">=</span> <span class="p">[[</span><span class="n">UIImage</span> <span class="nl">imageNamed:</span><span class="s">@&quot;button_back_textured_30&quot;</span><span class="p">]</span> <span class="nl">resizableImageWithCapInsets:</span><span class="n">UIEdgeInsetsMake</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)];</span>
+</span><span class='line'><span class="n">UIImage</span> <span class="o">*</span><span class="n">buttonBack24</span> <span class="o">=</span> <span class="p">[[</span><span class="n">UIImage</span> <span class="nl">imageNamed:</span><span class="s">@&quot;button_back_textured_24&quot;</span><span class="p">]</span> <span class="nl">resizableImageWithCapInsets:</span><span class="n">UIEdgeInsetsMake</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)];</span>
+</span><span class='line'><span class="p">[[</span><span class="n">UIBarButtonItem</span> <span class="n">appearance</span><span class="p">]</span> <span class="nl">setBackButtonBackgroundImage:</span><span class="n">buttonBack30</span> <span class="nl">forState:</span><span class="n">UIControlStateNormal</span> <span class="nl">barMetrics:</span><span class="n">UIBarMetricsDefault</span><span class="p">];</span>
+</span><span class='line'><span class="p">[[</span><span class="n">UIBarButtonItem</span> <span class="n">appearance</span><span class="p">]</span> <span class="nl">setBackButtonBackgroundImage:</span><span class="n">buttonBack24</span> <span class="nl">forState:</span><span class="n">UIControlStateNormal</span> <span class="nl">barMetrics:</span><span class="n">UIBarMetricsLandscapePhone</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/article/custom_navigation_bar/IOS6_navigation_bar_cutom_back_btn.png"/></p>
+
+<p>为了更好的兼容横屏模式你需要准备两种尺寸的背景图:</p>
+
+<p><img src="/images/article/custom_navigation_bar/button_back_textured_24.png"/>
+48x24</p>
+
+<p><img src="/images/article/custom_navigation_bar/button_back_textured_24.png"/>
+48x30</p>
+
+<h2><span id="anchor5">修改导航栏标题的字体</span></h2>
+
+<p>跟iOS 6一样，我们可以使用导航栏的titleTextAttributes属性来定制导航栏的文字风格。<br>在text attributes字典中使用如下一些key，可以指定字体、文字颜色、文字阴影色以及文字阴影偏移量：</p>
+
+<p>iOS5/6:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">UIFont</span> <span class="o">*</span><span class="n">titleFont</span> <span class="o">=</span> <span class="p">[</span><span class="n">UIFont</span> <span class="nl">fontWithName:</span><span class="s">@&quot;HelveticaNeue-CondensedBlack&quot;</span> <span class="nl">size:</span><span class="mf">21.0</span><span class="p">];</span>
+</span><span class='line'><span class="n">NSDictionary</span> <span class="o">*</span><span class="n">titleTextAttributes</span> <span class="o">=</span> <span class="err">@</span><span class="p">{</span><span class="n">UITextAttributeTextColor</span> <span class="o">:</span> <span class="n">UIColorFromRGB</span><span class="p">(</span><span class="mh">0xf5f5f5</span><span class="p">),</span>
+</span><span class='line'>                                      <span class="n">UITextAttributeTextShadowColor</span> <span class="o">:</span> <span class="n">UIColorFromRGB</span><span class="p">(</span><span class="mh">0x000000</span><span class="p">),</span>
+</span><span class='line'>                                      <span class="n">UITextAttributeTextShadowOffset</span> <span class="o">:</span> <span class="p">[</span><span class="n">NSValue</span> <span class="nl">valueWithUIOffset:</span><span class="n">UIOffsetMake</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span>
+</span><span class='line'>                                      <span class="n">UITextAttributeFont</span> <span class="o">:</span> <span class="n">titleFont</span><span class="p">};</span>
+</span><span class='line'><span class="p">[[</span><span class="n">UINavigationBar</span> <span class="n">appearance</span><span class="p">]</span> <span class="nl">setTitleTextAttributes:</span><span class="n">titleTextAttributes</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>iOS7:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">NSShadow</span> <span class="o">*</span><span class="n">shadow</span> <span class="o">=</span> <span class="p">[[</span><span class="n">NSShadow</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'><span class="n">shadow</span><span class="p">.</span><span class="n">shadowColor</span> <span class="o">=</span> <span class="p">[</span><span class="n">UIColor</span> <span class="nl">colorWithRed:</span><span class="mf">0.0</span> <span class="nl">green:</span><span class="mf">0.0</span> <span class="nl">blue:</span><span class="mf">0.0</span> <span class="nl">alpha:</span><span class="mf">0.8</span><span class="p">];</span>
+</span><span class='line'><span class="n">shadow</span><span class="p">.</span><span class="n">shadowOffset</span> <span class="o">=</span> <span class="n">CGSizeMake</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">UIFont</span> <span class="o">*</span><span class="n">titleFont</span> <span class="o">=</span> <span class="p">[</span><span class="n">UIFont</span> <span class="nl">fontWithName:</span><span class="s">@&quot;HelveticaNeue-CondensedBlack&quot;</span> <span class="nl">size:</span><span class="mf">21.0</span><span class="p">];</span>
+</span><span class='line'><span class="n">NSDictionary</span> <span class="o">*</span><span class="n">titleTextAttributes</span> <span class="o">=</span> <span class="err">@</span><span class="p">{</span><span class="nl">NSForegroundColorAttributeName:</span> <span class="n">UIColorFromRGB</span><span class="p">(</span><span class="mh">0xf5f5f5</span><span class="p">),</span>
+</span><span class='line'>                                      <span class="n">NSShadowAttributeName</span> <span class="o">:</span> <span class="n">shadow</span><span class="p">,</span>
+</span><span class='line'>                                      <span class="n">NSFontAttributeName</span> <span class="o">:</span> <span class="n">titleFont</span><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">[[</span><span class="n">UINavigationBar</span> <span class="n">appearance</span><span class="p">]</span> <span class="nl">setTitleTextAttributes:</span><span class="n">titleTextAttributes</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/article/custom_navigation_bar/contrast_navigation_bar_custom_title.png"/></p>
+
+<h2><span id="anchor7">修改导航栏标题为图片</span></h2>
+
+<p>如果要想将导航栏标题修改为一个图片或者logo，那么只需要使用下面这行代码即可:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">self</span><span class="p">.</span><span class="n">navigationItem</span><span class="p">.</span><span class="n">titleView</span> <span class="o">=</span> <span class="p">[[</span><span class="n">UIImageView</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithImage:</span><span class="p">[</span><span class="n">UIImage</span> <span class="nl">imageNamed:</span><span class="s">@&quot;app_title&quot;</span><span class="p">]];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面的代码简单的修改了titleView属性，将一个图片赋值给它。 注意：这不是iOS 7中的新功能，之前的iOS版本就可以已经有了。</p>
+
+<p>具体效果如下图所示：</p>
+
+<p><img src="/images/article/custom_navigation_bar/contrast_navigation_bar_custom_image_title.png"/></p>
+
+<h2><span id="anchor8">添加多个按钮</span></h2>
+
+<p>同样,这个技巧也不是iOS 7的,开发者经常会在导航栏中添加多个按钮,所以我决定在这里进行介绍.</p>
+
+<p>我们可以在导航栏左边或者右边添加多个按钮.例如,我们希望在导航栏右边添加一个照相机和分享按钮,那只需要使用下面的代码即可:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">UIBarButtonItem</span> <span class="o">*</span><span class="n">shareItem</span> <span class="o">=</span> <span class="p">[[</span><span class="n">UIBarButtonItem</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithBarButtonSystemItem:</span><span class="n">UIBarButtonSystemItemAction</span> <span class="nl">target:</span><span class="n">self</span> <span class="nl">action:</span><span class="nb">nil</span><span class="p">];</span>
+</span><span class='line'><span class="n">UIBarButtonItem</span> <span class="o">*</span><span class="n">cameraItem</span> <span class="o">=</span> <span class="p">[[</span><span class="n">UIBarButtonItem</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithBarButtonSystemItem:</span><span class="n">UIBarButtonSystemItemCamera</span> <span class="nl">target:</span><span class="n">self</span> <span class="nl">action:</span><span class="nb">nil</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">NSArray</span> <span class="o">*</span><span class="n">actionButtonItems</span> <span class="o">=</span> <span class="err">@</span><span class="p">[</span><span class="n">shareItem</span><span class="p">,</span> <span class="n">cameraItem</span><span class="p">];</span>
+</span><span class='line'><span class="n">self</span><span class="p">.</span><span class="n">navigationItem</span><span class="p">.</span><span class="n">rightBarButtonItems</span> <span class="o">=</span> <span class="n">actionButtonItems</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在iOS6上系统提供样式不够好? 当然你可以用自己的图片来完成想要的效果:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">NSDictionary</span> <span class="o">*</span><span class="n">barItemAttributes</span> <span class="o">=</span> <span class="p">[</span><span class="n">NSDictionary</span> <span class="nl">dictionaryWithObjectsAndKeys:</span>
+</span><span class='line'>                                   <span class="n">UIColorFromRGB</span><span class="p">(</span><span class="mh">0xffffff</span><span class="p">),</span> <span class="n">UITextAttributeTextColor</span><span class="p">,</span>
+</span><span class='line'>                                   <span class="n">UIColorFromRGB</span><span class="p">(</span><span class="mh">0x000000</span><span class="p">),</span> <span class="n">UITextAttributeTextShadowColor</span><span class="p">,</span>
+</span><span class='line'>                                   <span class="p">[</span><span class="n">NSValue</span> <span class="nl">valueWithUIOffset:</span><span class="n">UIOffsetMake</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span> <span class="n">UITextAttributeTextShadowOffset</span><span class="p">,</span>
+</span><span class='line'>                                   <span class="p">[</span><span class="n">UIFont</span> <span class="nl">fontWithName:</span><span class="s">@&quot;AmericanTypewriter&quot;</span> <span class="nl">size:</span><span class="mf">0.0</span><span class="p">],</span> <span class="n">UITextAttributeFont</span><span class="p">,</span>
+</span><span class='line'>                                   <span class="nb">nil</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">[[</span><span class="n">UIBarButtonItem</span> <span class="n">appearance</span><span class="p">]</span> <span class="nl">setTitleTextAttributes:</span><span class="n">barItemAttributes</span> <span class="nl">forState:</span><span class="n">UIControlStateNormal</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">UIImage</span> <span class="o">*</span><span class="n">button30</span> <span class="o">=</span> <span class="p">[[</span><span class="n">UIImage</span> <span class="nl">imageNamed:</span><span class="s">@&quot;button_textured_30&quot;</span><span class="p">]</span> <span class="nl">resizableImageWithCapInsets:</span><span class="n">UIEdgeInsetsMake</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)];</span>
+</span><span class='line'><span class="n">UIImage</span> <span class="o">*</span><span class="n">button24</span> <span class="o">=</span> <span class="p">[[</span><span class="n">UIImage</span> <span class="nl">imageNamed:</span><span class="s">@&quot;button_textured_24&quot;</span><span class="p">]</span> <span class="nl">resizableImageWithCapInsets:</span><span class="n">UIEdgeInsetsMake</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)];</span>
+</span><span class='line'><span class="p">[[</span><span class="n">UIBarButtonItem</span> <span class="n">appearance</span><span class="p">]</span> <span class="nl">setBackgroundImage:</span><span class="n">button30</span> <span class="nl">forState:</span><span class="n">UIControlStateNormal</span> <span class="nl">barMetrics:</span><span class="n">UIBarMetricsDefault</span><span class="p">];</span>
+</span><span class='line'><span class="p">[[</span><span class="n">UIBarButtonItem</span> <span class="n">appearance</span><span class="p">]</span> <span class="nl">setBackButtonBackgroundImage:</span><span class="n">button24</span> <span class="nl">forState:</span><span class="n">UIControlStateNormal</span> <span class="nl">barMetrics:</span><span class="n">UIBarMetricsLandscapePhone</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/article/custom_navigation_bar/contrast_navigation_bar_muti_items.png"/></p>
+
+<h2><span id="anchor9">修改状态栏的风格</span></h2>
+
+<p>在老版本的iOS中,状态栏永远都是白色风格.而在iOS 7中,我们可以修改每个view controller中状态栏的外观.</p>
+
+<p>我们需要在对应的view controller中复写 <code>preferredStatusBarStyle:</code>方法</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="n">UIStatusBarStyle</span><span class="p">)</span><span class="nf">preferredStatusBarStyle</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">UIStatusBarStyleLightContent</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>需要注意的是如果你的ViewController套在NavigationController中你只能通过改NavigationController的<code>preferredStatusBarStyle</code>才能起到效果.</p>
+
+<p>如果你用的是xib或者storyboard那你可以在xib中设置对应视图的status bar style.</p>
+
+<p><img src="/images/article/custom_navigation_bar/xib_status_bar.png"/></p>
+
+<p>还有另外一种方法来改变status bar的样式(<code>推荐</code>):</p>
+
+<p>可以使用UIApplication的statusBarStyle方法来设置状态栏,不过,首先需要停止使用<code>View controller-based status bar appearance</code>.</p>
+
+<p>在<code>project target</code>的<code>Info tab</code>中,插入一个新的key,名字为<code>View controller-based status bar appearance</code>,并将其值设置为NO.</p>
+
+<p><img src="/images/article/custom_navigation_bar/modify_info_status_bar_style.png"/></p>
+
+<p>之后你就可以通过下面的代码来改变status bar 的风格了</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">[[</span><span class="n">UIApplication</span> <span class="n">sharedApplication</span><span class="p">]</span> <span class="nl">setStatusBarStyle:</span><span class="n">UIStatusBarStyleLightContent</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2><span id="anchor10">隐藏状态栏</span></h2>
+
+<p>有时候我们需要隐藏状态栏,那么此时我们在view controller中override方法prefersStatusBarHidden:即可,如下代码所示:</p>
+
+<p>iOS6:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">[[</span><span class="n">UIApplication</span> <span class="n">sharedApplication</span><span class="p">]</span> <span class="nl">setStatusBarHidden:</span><span class="n">YES</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>iOS7:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">BOOL</span><span class="p">)</span><span class="nf">prefersStatusBarHidden</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">YES</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2><span id="anchor11">接下来?</span></h2>
+
+<p>还会继续总结Custom UI相关文章</p>
+
+<p>你可以在这里下载到本文的<a href="https://github.com/goldfish0506/iOSCustomUI/archive/master.zip">Demo</a>,(本文提供的代码需要用Xcode 5来执行)</p>
+
+<p>如果文中有错误的地方,请指正,谢谢~</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">alvin</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-19T15:30:20+08:00" pubdate data-updated="true">Dec 19<span>th</span>, 2013</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/19/custom-navigation-bar/">使你的Navigation Bar难以置信地兼容iOS6/7</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - alvin -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
