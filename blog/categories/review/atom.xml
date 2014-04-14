@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Review | Alvin's Blog]]></title>
+  <link href="http://goldfish0506.github.io/blog/categories/review/atom.xml" rel="self"/>
+  <link href="http://goldfish0506.github.io/"/>
+  <updated>2014-04-14T16:16:24+08:00</updated>
+  <id>http://goldfish0506.github.io/</id>
+  <author>
+    <name><![CDATA[alvin]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[苹果审核给你判的那些罪]]></title>
+    <link href="http://goldfish0506.github.io/blog/2014/04/14/app-reject-reasons-collection/"/>
+    <updated>2014-04-14T11:38:50+08:00</updated>
+    <id>http://goldfish0506.github.io/blog/2014/04/14/app-reject-reasons-collection</id>
+    <content type="html"><![CDATA[<p>提审容易, 开发不易, 且搞且珍惜&hellip;</p>
+
+<p>身为iOS开发者,我们都难免会与苹果审核(iTunes Store Team)打交道.</p>
+
+<p>但是这个神秘的组织又是个黑盒,我们没办法直接接触到.</p>
+
+<p>然而他们又掌握着App的生杀大权.</p>
+
+<p>所以决定把一些提审被拒的心路历程收集于此.方便日后提审的时候做个CheckList.</p>
+
+<!-- more -->
+
+
+<ol>
+<li>需要提供Demo账号.</li>
+</ol>
+
+
+<p>个人觉得所有带账号系统的App都"必须"提供给苹果一个Demo账号.虽然这个信息是Optional的.</p>
+
+<p>这个信息的入口在 <code>iTunes Connect -&gt; Manage Your Applications -&gt; Select your app -&gt; View Details -&gt; Contact Information -&gt; Demo Account Information</code></p>
+
+<p>官方邮件:</p>
+
+<blockquote><p>Information Needed</p>
+
+<p>We began the review of your app but are not able to continue because we need a demo account to fully access your app features.</p>
+
+<p>Please provide demo account details in the Review Notes section of the Version Information for your app. Please ensure that the information you provide includes any data necessary to demonstrate the functionality of your app features.</p>
+
+<p>A screenshot has been provided for your reference.</p>
+
+<p>You can provide demo account information, including passwords, in the Review Notes section of your iTunes Connect App Information.</p>
+
+<p>While your iTunes Connect Application State shows as Metadata Rejected, we don&rsquo;t require a new binary to correct this issue. Please visit iTunes Connect, Manage Your Applications. Select your app, then click View Details of the desired version. Click the Edit button next to Version Information to edit the Review Notes for your app, then click &ldquo;Save&rdquo;.</p>
+
+<p>When you are done, click &ldquo;Submit New Metadata&rdquo; and we can resume the review of your app.</p></blockquote>
+
+<p>To be continue&hellip;</p>
+]]></content>
+  </entry>
+  
+</feed>
