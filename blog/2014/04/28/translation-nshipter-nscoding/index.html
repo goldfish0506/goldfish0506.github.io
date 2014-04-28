@@ -1,0 +1,424 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>[译文]NSCoding / NSKeyedArchiver - Alvin's Blog</title>
+  <meta name="author" content="alvin">
+
+  
+  <meta name="description" content="NSHipster是非常优秀的关于Objective-C和Cocoa的技术博客，作者是Mattt Thompson大神，我参与翻译了其中部分文章，你也可以在NSHipster中文版找到更多译文。 在构建应用程序时，一个重要的架构决策问题是在每次启动之间如何持久化数据。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://goldfish0506.github.io/blog/2014/04/28/translation-nshipter-nscoding">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css"/>
+  <link href="/atom.xml" rel="alternate" title="Alvin's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Alvin's Blog</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:goldfish0506.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">[译文]NSCoding / NSKeyedArchiver</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-28T10:53:04+08:00" pubdate data-updated="true">Apr 28<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><a href="http://nshipster.com">NSHipster</a>是非常优秀的关于Objective-C和Cocoa的技术博客，作者是<a href="http://mattt.me">Mattt Thompson大神</a>，我参与翻译了其中部分文章，你也可以在<a href="http://nshipster.cn">NSHipster中文版</a>找到更多译文。</p>
+
+<p>在构建应用程序时，一个重要的架构决策问题是在每次启动之间如何持久化数据。问题是如何精准的重现最后一次关闭应用前的状态；如何描述对象图以使下次完美地重新构建。</p>
+
+<!-- more -->
+
+
+<p>在 iOS 和 Mac OS X 上， 苹果提供了两种选择 ：<a href="http://developer.apple.com/library/mac/#documentation/cocoa/Conceptual/CoreData/cdProgrammingGuide.html">Core Data</a> 或 <a href="http://developer.apple.com/library/ios/#Documentation/Cocoa/Reference/Foundation/Classes/NSKeyedArchiver_Class/Reference/Reference.html"><code>NSKeyedArchiver</code></a> / <a href="http://developer.apple.com/library/ios/#documentation/Cocoa/Reference/Foundation/Classes/NSKeyedUnarchiver_Class/Reference/Reference.html"><code>NSKeyedUnarchiver</code></a> （用来将遵循 <code>&lt;NSCoding&gt;</code> 的类序列化）</p>
+
+<blockquote><p>或者更确切地说：有三种选择，如果你算上<code>NSURLCache</code>的话. 在client-server应用场景下，在每次启动时加载必要的数据是一种可行的设计，尤其是结合磁盘缓存，存储服务器的响应，这样当发送对应请求的时候可以立即返回。在实践中，网络层和对象层上的缓存结合是可取的。</p></blockquote>
+
+<p>当涉及到建模，查询，遍历，持久化复杂的对象图，那Core Data是无可代替的。Core Data 是把大锤子，但不是所有的问题都是足够大的钉子。</p>
+
+<p>Core Data 和 <code>NSKeyedArchiver</code>客观和常见的比较可能是这样的：</p>
+
+<table id="figure-1" class="core-data-versus-nskeyedarchiver">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Core Data</th>
+      <th>NSKeyedArchiver</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Entity Modeling</td>
+      <td>Yes</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>Querying</td>
+      <td>Yes</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>Speed</td>
+      <td>Fast</td>
+      <td>Slow</td>
+    </tr>
+    <tr>
+      <td>Serialization Format</td>
+      <td>SQLite, XML, or NSData</td>
+      <td>NSData</td>
+    </tr>
+    <tr>
+      <td>Migrations</td>
+      <td>Automatic</td>
+      <td>Manual</td>
+    </tr>
+    <tr>
+      <td>Undo Manager</td>
+      <td>Automatic</td>
+      <td>Manual</td>
+    </tr>
+  </tbody>
+</table>
+
+
+<p>等等。在这场对决中，没有什么可比性，它看起来是一边倒的局势。</p>
+
+<p>&hellip;也就是说，直到你从一个稍微不同的角度看它：</p>
+
+<table id="figure-2" class="core-data-versus-nskeyedarchiver">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Core Data</th>
+      <th>NSKeyedArchiver</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Persists State</td>
+      <td>Yes</td>
+      <td>Yes</td>
+    </tr>
+    <tr>
+      <td>Pain in the Ass</td>
+      <td>Yes</td>
+      <td>No</td>
+    </tr>
+  </tbody>
+</table>
+
+
+<p>通过这些对比，在某些情况下<code>NSKeyedArchiver</code>是一个完全合理的选择。并非所有的应用程序需要查询的数据。并非所有的应用程序需要自动迁移。并非所有的应用程序处理大型或复杂的对象图。而且应用中确实是有一些模块更好地被一个简单的方案解决。</p>
+
+<p>这篇文章将关注如何，何时，为什么选择<code>NSKeyedArchiver</code> 和 <code>NSCoding</code>。希望能提供给亲爱的读者们以启发选择最合适的工具。</p>
+
+<p><code>NSCoding</code> 是一个简单的协议，有两个方法： <code>-initWithCoder:</code> 和 <code>encodeWithCoder:</code>。遵循<code>NSCoding</code>协议的类可以被序列化和反序列化，这样可以归档到磁盘上或分发到网络上。</p>
+
+<p>举个例子：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">@interface</span> <span class="nc">Book</span> : <span class="nc">NSObject</span> <span class="o">&lt;</span><span class="n">NSCoding</span><span class="o">&gt;</span>
+</span><span class='line'><span class="k">@property</span> <span class="n">NSString</span> <span class="o">*</span><span class="n">title</span><span class="p">;</span>
+</span><span class='line'><span class="k">@property</span> <span class="n">NSString</span> <span class="o">*</span><span class="n">author</span><span class="p">;</span>
+</span><span class='line'><span class="k">@property</span> <span class="n">NSUInteger</span> <span class="n">pageCount</span><span class="p">;</span>
+</span><span class='line'><span class="k">@property</span> <span class="n">NSSet</span> <span class="o">*</span><span class="n">categories</span><span class="p">;</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="n">getter</span> <span class="o">=</span> <span class="n">isAvailable</span><span class="p">)</span> <span class="kt">BOOL</span> <span class="n">available</span><span class="p">;</span>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">Book</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#pragma mark - NSCoding</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nf">initWithCoder:</span><span class="p">(</span><span class="n">NSCoder</span> <span class="o">*</span><span class="p">)</span><span class="nv">decoder</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">self</span> <span class="o">=</span> <span class="p">[</span><span class="n">super</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">self</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nb">nil</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">self</span><span class="p">.</span><span class="n">title</span> <span class="o">=</span> <span class="p">[</span><span class="n">decoder</span> <span class="nl">decodeObjectForKey:</span><span class="s">@&quot;title&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">self</span><span class="p">.</span><span class="n">author</span> <span class="o">=</span> <span class="p">[</span><span class="n">decoder</span> <span class="nl">decodeObjectForKey:</span><span class="s">@&quot;author&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">self</span><span class="p">.</span><span class="n">pageCount</span> <span class="o">=</span> <span class="p">[</span><span class="n">decoder</span> <span class="nl">decodeIntegerForKey:</span><span class="s">@&quot;pageCount&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">self</span><span class="p">.</span><span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="n">decoder</span> <span class="nl">decodeObjectForKey:</span><span class="s">@&quot;categories&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">self</span><span class="p">.</span><span class="n">available</span> <span class="o">=</span> <span class="p">[</span><span class="n">decoder</span> <span class="nl">decodeBoolForKey:</span><span class="s">@&quot;available&quot;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">self</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">encodeWithCoder:</span><span class="p">(</span><span class="n">NSCoder</span> <span class="o">*</span><span class="p">)</span><span class="nv">encoder</span> <span class="p">{</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">encoder</span> <span class="nl">encodeObject:</span><span class="n">self</span><span class="p">.</span><span class="n">title</span> <span class="nl">forKey:</span><span class="s">@&quot;title&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">encoder</span> <span class="nl">encodeObject:</span><span class="n">self</span><span class="p">.</span><span class="n">author</span> <span class="nl">forKey:</span><span class="s">@&quot;author&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">encoder</span> <span class="nl">encodeInteger:</span><span class="n">self</span><span class="p">.</span><span class="n">pageCount</span> <span class="nl">forKey:</span><span class="s">@&quot;pageCount&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">encoder</span> <span class="nl">encodeObject:</span><span class="n">self</span><span class="p">.</span><span class="n">categories</span> <span class="nl">forKey:</span><span class="s">@&quot;categories&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">encoder</span> <span class="nl">encodeBool:</span><span class="p">[</span><span class="n">self</span> <span class="n">isAvailable</span><span class="p">]</span> <span class="nl">forKey:</span><span class="s">@&quot;available&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如上，<code>NSCoding</code> 主要是样板文件。每个属性用属性名作为key，编码或解码成一个对象或者类型。（有些开发者喜欢定义<code>NSString *</code>常量用作keypath, 其实通常这是没必要的）</p>
+
+<p>但是在控制整个序列化过程中样板文件有时候也是非常有用的东西，它可以保持灵活，可以这样解释：</p>
+
+<ul>
+<li><p><strong>Migrations</strong>: 如果一个数据模型发生变化，如添加，重命名或删除一个字段，这应该与之前序列化的数据保持兼容性。Apple提供了一些参考<a href="https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/Archiving/Articles/compatibility.html#//apple_ref/doc/uid/20001055-BCICFFGE">&ldquo;Forward and Backward Compatibility for Keyed Archives&rdquo;</a>.</p></li>
+<li><p><strong>Archiving non-<code>NSCoding</code>-compatible Classes</strong>: 根据面向对象设计原则，对象应该可以被编码和解码成一种序列化的格式。但是如果一个类不是内置遵循<code>NSCoding</code>，你可以后续让这个类遵循<code>NSCoding</code>来达到目的。</p></li>
+</ul>
+
+
+<blockquote><p><a href="https://github.com/github/Mantle">Mantle</a>是一个意在减少写<code>NSCoding</code>样板文件的类库。如果你正在寻找更方便使用<code>NSCoding</code>代替Core Data创建model的方法，那Mantle值得一看。</p></blockquote>
+
+<p>当然，序列化只是故事的一部分。决定把数据持久化到什么地方又是另一个问题。同样，这里有两个方法：写入本地文件系统或者使用<code>NSUserDefaults</code>。</p>
+
+<h2>File System</h2>
+
+<p><code>NSKeyedArchiver</code> 和 <code>NSKeyedUnarchiver</code> 提供了很方便的API把对象读取/写入磁盘。</p>
+
+<p> 一个基于<code>NSCoding</code>的table view controller可以通过file manager设置它的属性集合。</p>
+
+<h4>Archiving</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">[</span><span class="n">NSKeyedArchiver</span> <span class="nl">archiveRootObject:</span><span class="n">books</span> <span class="nl">toFile:</span><span class="s">@&quot;/path/to/archive&quot;</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Unarchiving</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">[</span><span class="n">NSKeyedUnarchiver</span> <span class="nl">unarchiveObjectWithFile:</span><span class="s">@&quot;/path/to/archive&quot;</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2><code>NSUserDefaults</code></h2>
+
+<p>每个应用程序都有自己的user preferences，它可以存储和检索遵循<code>NSCoding</code>协议的对象或者是C类型数据。</p>
+
+<p>然而不推荐将整个对象图存入<code>NSUserDefaults</code>，但是用这种方式编码复合对象是不错的选择，例如“当前用户”的对象<del>或者API credentials</del><ins>(用 <a href="https://developer.apple.com/library/mac/#documentation/security/Conceptual/keychainServConcepts/iPhoneTasks/iPhoneTasks.html">Keychain</a> 来代替)</ins>。</p>
+
+<h4>Archiving</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">NSData</span> <span class="o">*</span><span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">NSKeyedArchiver</span> <span class="nl">archivedDataWithRootObject:</span><span class="n">books</span><span class="p">];</span>
+</span><span class='line'><span class="p">[[</span><span class="n">NSUserDefaults</span> <span class="n">standardUserDefaults</span><span class="p">]</span> <span class="nl">setObject:</span><span class="n">data</span> <span class="nl">forKey:</span><span class="s">@&quot;books&quot;</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Unarchiving</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">NSData</span> <span class="o">*</span><span class="n">data</span> <span class="o">=</span> <span class="p">[[</span><span class="n">NSUserDefaults</span> <span class="n">standardUserDefaults</span><span class="p">]</span> <span class="nl">objectForKey:</span><span class="s">@&quot;books&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="n">NSArray</span> <span class="o">*</span><span class="n">books</span> <span class="o">=</span> <span class="p">[</span><span class="n">NSKeyedUnarchiver</span> <span class="nl">unarchiveObjectWithData:</span><span class="n">data</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>作为开发者，我们是有义务去理解我们应用程序的目标和需求，并且抑制住过于工程化和过早优化的冲动。</p>
+
+<p>在应用程序中使用Core Data的决定或许是显而易见的。但是在很多情况下，Core Data 被发现是如此的笨拙或者不必要的，甚至是一种对可用性的障碍，更不用说实用性。</p>
+
+<p>即使很多应用在某些方面<em>可能</em>受益于Core Data，让事物从简单演化到复杂是必要的，其中蕴含着智慧。但是就持久化而言，它不会比<code>NSCoding</code>更简单。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">alvin</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-28T10:53:04+08:00" pubdate data-updated="true">Apr 28<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/nscoding/'>nscoding</a>, <a class='category' href='/blog/categories/translation/'>translation</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/04/14/app-reject-reasons-collection/" title="Previous Post: 苹果审核给你判的那些罪">&laquo; 苹果审核给你判的那些罪</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/04/28/translation-nshipter-nscoding/">[译文]NSCoding / NSKeyedArchiver</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/14/app-reject-reasons-collection/">苹果审核给你判的那些罪</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/19/custom-navigation-bar/">使你的Navigation Bar难以置信地兼容iOS6/7</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - alvin -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
