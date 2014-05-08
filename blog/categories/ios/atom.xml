@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: iOS, | Alvin's Blog]]></title>
+  <link href="http://goldfish0506.github.io/blog/categories/ios/atom.xml" rel="self"/>
+  <link href="http://goldfish0506.github.io/"/>
+  <updated>2014-05-08T18:18:29+08:00</updated>
+  <id>http://goldfish0506.github.io/</id>
+  <author>
+    <name><![CDATA[alvin]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[NSAttributedString 计算高度的天坑...]]></title>
+    <link href="http://goldfish0506.github.io/blog/2014/05/08/ios-nsattributedstring-calculate-height/"/>
+    <updated>2014-05-08T17:03:21+08:00</updated>
+    <id>http://goldfish0506.github.io/blog/2014/05/08/ios-nsattributedstring-calculate-height</id>
+    <content type="html"><![CDATA[<p>苹果对富文本的支持越来越完备, 在iOS7中更好地支持HTML了,现在你可以用NSAttributedString来展示HTML的内容.</p>
+
+<p>尝试使用<code>NSHTMLTextDocumentType</code>展示HTML吧:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">NSString</span> <span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">html</span> <span class="o">=</span> <span class="err">@</span><span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="o">&lt;</span><span class="n">bold</span><span class="o">&gt;</span><span class="n">Wow</span><span class="o">!&lt;/</span><span class="n">bold</span><span class="o">&gt;</span> <span class="n">Now</span> <span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">iOS</span><span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span> <span class="n">can</span> <span class="n">create</span> <span class="o">&lt;</span><span class="n">h3</span><span class="o">&gt;</span><span class="n">NSAttributedString</span><span class="o">&lt;/</span><span class="n">h3</span><span class="o">&gt;</span> <span class="n">from</span> <span class="n">HTMLs</span><span class="o">!&amp;</span><span class="n">rdquo</span><span class="p">;;</span>
+</span><span class='line'><span class="n">NSDictionary</span> <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">options</span> <span class="o">=</span> <span class="err">@</span><span class="p">{</span><span class="nl">NSDocumentTypeDocumentAttribute:</span> <span class="n">NSHTMLTextDocumentType</span><span class="p">};</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">NSAttributedString</span> <span class="o">*</span><span class="n">attrString</span> <span class="o">=</span> <span class="p">[[</span><span class="n">NSAttributedString</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithData:</span><span class="p">[</span><span class="n">html</span> <span class="nl">dataUsingEncoding:</span><span class="n">NSUTF8StringEncoding</span><span class="p">]</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>                                                              <span class="nl">options:</span><span class="n">options</span>
+</span><span class='line'>                                                   <span class="nl">documentAttributes:</span><span class="nb">nil</span>
+</span><span class='line'>                                                                <span class="nl">error:</span><span class="nb">nil</span><span class="p">];</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>同样你也可以通过NSAttributedString获得HTML文本:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">NSAttributedString</span> <span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">attrString</span><span class="p">;</span> <span class="c1">// from previous code</span>
+</span><span class='line'><span class="n">NSDictionary</span> <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">options</span> <span class="o">=</span> <span class="err">@</span><span class="p">{</span><span class="nl">NSDocumentTypeDocumentAttribute:</span> <span class="n">NSHTMLTextDocumentType</span><span class="p">};</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">NSData</span> <span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">htmlData</span> <span class="o">=</span> <span class="p">[</span><span class="n">attrString</span> <span class="nl">dataFromRange:</span><span class="n">NSMakeRange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="n">attrString</span> <span class="n">length</span><span class="p">])</span> <span class="nl">documentAttributes:</span><span class="n">options</span> <span class="nl">error:</span><span class="nb">nil</span><span class="p">];</span>
+</span><span class='line'><span class="n">NSString</span> <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">htmlString</span> <span class="o">=</span> <span class="p">[[</span><span class="n">NSString</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithData:</span><span class="n">htmlData</span> <span class="nl">encoding:</span><span class="n">NSUTF8StringEncoding</span><span class="p">];</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>但是再享受NSAttributedString带来方便的同时,我们也会遇到些令人头痛的小麻烦&hellip;</p>
+
+<!-- more -->
+
+
+<p>比如在计算高度的时候我就遇到了个蛋疼的问题:</p>
+
+<p>这里介绍下计算高度的方法&hellip;需要的同学拿去吧~
+或者你也可以从Mattt大神哪里获得<a href="https://github.com/mattt/TTTAttributedLabel/blob/master/TTTAttributedLabel/TTTAttributedLabel.m#L393-L395">一个更牛逼的计算方法</a></p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">@interface</span> <span class="nc">NSString</span> <span class="nl">(Calculate)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">ul</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">li</span><span class="o">&gt;</span><span class="p">(</span><span class="n">CGSize</span><span class="p">)</span><span class="nl">sizeWithAttributes:</span><span class="p">(</span><span class="n">NSDictionary</span> <span class="o">*</span><span class="p">)</span><span class="n">attrs</span> <span class="nl">constrainedToSize:</span><span class="p">(</span><span class="n">CGSize</span><span class="p">)</span><span class="n">size</span><span class="p">;</span><span class="o">&lt;/</span><span class="n">li</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">ul</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">@end</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">@implementation</span> <span class="nc">NSString</span> <span class="nl">(Calculate)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">ul</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">li</span><span class="o">&gt;</span><span class="p">(</span><span class="n">CGSize</span><span class="p">)</span><span class="nl">sizeWithAttributes:</span><span class="p">(</span><span class="n">NSDictionary</span> <span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="p">)</span><span class="n">attrs</span> <span class="nl">constrainedToSize:</span><span class="p">(</span><span class="n">CGSize</span><span class="p">)</span><span class="n">size</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="n">NSAttributedString</span> <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">attributedString</span> <span class="o">=</span> <span class="p">[[</span><span class="n">NSAttributedString</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithString:</span><span class="n">self</span>
+</span><span class='line'>                                                                       <span class="nl">attributes:</span><span class="n">attrs</span><span class="p">];</span>
+</span><span class='line'><span class="n">CTFramesetterRef</span> <span class="n">framesetter</span> <span class="o">=</span> <span class="n">CTFramesetterCreateWithAttributedString</span><span class="p">((</span><span class="n">__bridge</span> <span class="n">CFAttributedStringRef</span><span class="p">)</span> <span class="n">attributedString</span><span class="p">);</span>
+</span><span class='line'><span class="n">CGSize</span> <span class="n">fitSize</span> <span class="o">=</span> <span class="n">CTFramesetterSuggestFrameSizeWithConstraints</span><span class="p">(</span><span class="n">framesetter</span><span class="p">,</span> <span class="n">CFRangeMake</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+</span><span class='line'><span class="n">CFRelease</span><span class="p">(</span><span class="n">framesetter</span><span class="p">);</span>
+</span><span class='line'><span class="k">return</span> <span class="n">fitSize</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span><span class="o">&lt;/</span><span class="n">li</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">ul</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">@end</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>故事到这里看似都顺风顺水</p>
+
+<p><img src="http://alvin-blog.qiniudn.com/u=3540161728,54641166&fm=56.jpeg" /></p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'>  <span class="n">NSMutableParagraphStyle</span> <span class="o">*</span><span class="n">paragraphStyle</span> <span class="o">=</span> <span class="p">[[</span><span class="n">NSMutableParagraphStyle</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">paragraphStyle</span><span class="p">.</span><span class="n">lineSpacing</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">paragraphStyle</span><span class="p">.</span><span class="n">lineBreakMode</span> <span class="o">=</span> <span class="n">NSLineBreakByTruncatingTail</span><span class="p">;</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="n">NSDictionary</span> <span class="o">*</span><span class="n">attributes</span> <span class="o">=</span> <span class="err">@</span><span class="p">{</span><span class="n">NSFontAttributeName</span> <span class="o">:</span> <span class="p">[</span><span class="n">UIFont</span> <span class="nl">systemFontOfSize:</span><span class="mi">12</span><span class="p">],</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>                           <span class="n">NSParagraphStyleAttributeName</span> <span class="o">:</span> <span class="n">paragraphStyle</span><span class="p">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>直到我将NSMutableParagraphStyle的<code>lineBreakMode</code>设置成<code>NSLineBreakByTruncatingTail</code>之后,就开始蛋疼了&hellip;
+这个时候返回的高度永远都只是单行的高度&hellip;</p>
+
+<p><img src="http://alvin-blog.qiniudn.com/%5DOI%5BT%5BQ45LY_U@JT)OVW%6059.jpg" /></p>
+
+<p>百般寻觅之后终于知道了问题所在:</p>
+
+<blockquote><p>lineBreakMode 设置成 NSLineBreakByTruncatingTail | NSLineBreakByTruncatingHead | NSLineBreakByTruncatingMiddle 在计算高度的时候 会被系统默认成单行</p></blockquote>
+
+<p>所以这里需要为计算高度的时候单独设置一个paragraphStyle,不用担心,在这里计算得到高度与最后显示的结果是一致的&hellip;</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">ul</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">li</span><span class="o">&gt;&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="p">(</span><span class="n">NSDictionary</span> <span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="p">)</span><span class="nl">attributesForUserTextWithCalculateMode:</span><span class="p">(</span><span class="kt">BOOL</span><span class="p">)</span><span class="n">isCalculateMode</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="n">NSMutableParagraphStyle</span> <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">paragraphStyle</span> <span class="o">=</span> <span class="p">[[</span><span class="n">NSMutableParagraphStyle</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'><span class="n">paragraphStyle</span><span class="p">.</span><span class="n">lineSpacing</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+</span><span class='line'><span class="n">paragraphStyle</span><span class="p">.</span><span class="n">lineBreakMode</span> <span class="o">=</span> <span class="n">isCalculateMode</span> <span class="o">?</span> <span class="n">NSLineBreakByWordWrapping</span> <span class="o">:</span> <span class="n">NSLineBreakByTruncatingTail</span><span class="p">;</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">return</span> <span class="err">@</span><span class="p">{</span><span class="n">NSFontAttributeName</span> <span class="o">:</span> <span class="p">[</span><span class="n">UIFont</span> <span class="nl">systemFontOfSize:</span><span class="mi">12</span><span class="p">],</span>
+</span><span class='line'>         <span class="n">NSParagraphStyleAttributeName</span> <span class="o">:</span> <span class="n">paragraphStyle</span><span class="p">,</span>
+</span><span class='line'>         <span class="nl">NSForegroundColorAttributeName:</span> <span class="p">[</span><span class="n">UIColor</span> <span class="n">blackColor</span><span class="p">]};</span>
+</span><span class='line'><span class="p">}</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;&lt;/</span><span class="n">li</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">ul</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>木哈哈&hellip;这样看起来好多了≖‿≖✧</p>
+
+<p><img width="400" src="http://alvin-blog.qiniudn.com/48B36488-3D3E-45F2-A5C1-1EB55BE81EAA.png" /></p>
+
+<p>参考链接:</p>
+
+<p><a href="http://lists.apple.com/archives/cocoa-dev/2012/Nov/msg00179.html">http://lists.apple.com/archives/cocoa-dev/2012/Nov/msg00179.html</a>
+<a href="http://stackoverflow.com/questions/7378308/uibuttons-title-label-word-wrap-with-tail-truncation">http://stackoverflow.com/questions/7378308/uibuttons-title-label-word-wrap-with-tail-truncation</a></p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -9,7 +9,14 @@
   <meta name="author" content="alvin">
 
   
-  <meta name="description" content="NSHipster是非常优秀的关于Objective-C和Cocoa的技术博客，作者是Mattt Thompson大神，我参与翻译了其中部分文章，你也可以在NSHipster中文版找到更多译文。 在构建应用程序时，一个重要的架构决策问题是在每次启动之间如何持久化数据。 &hellip;">
+  <meta name="description" content="苹果对富文本的支持越来越完备, 在iOS7中更好地支持HTML了,现在你可以用NSAttributedString来展示HTML的内容. 尝试使用NSHTMLTextDocumentType展示HTML吧: 1
+2
+3
+4
+5
+6
+7
+NSString *html = @&quot;&lt; &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -62,6 +69,83 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/05/08/ios-nsattributedstring-calculate-height/">NSAttributedString 计算高度的天坑&#8230;</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-08T17:03:21+08:00" pubdate data-updated="true">May 8<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>苹果对富文本的支持越来越完备, 在iOS7中更好地支持HTML了,现在你可以用NSAttributedString来展示HTML的内容.</p>
+
+<p>尝试使用<code>NSHTMLTextDocumentType</code>展示HTML吧:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">NSString</span> <span class="o">*</span><span class="n">html</span> <span class="o">=</span> <span class="s">@&quot;&lt;bold&gt;Wow!&lt;/bold&gt; Now &lt;em&gt;iOS&lt;/em&gt; can create &lt;h3&gt;NSAttributedString&lt;/h3&gt; from HTMLs!&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="n">NSDictionary</span> <span class="o">*</span><span class="n">options</span> <span class="o">=</span> <span class="err">@</span><span class="p">{</span><span class="nl">NSDocumentTypeDocumentAttribute:</span> <span class="n">NSHTMLTextDocumentType</span><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">NSAttributedString</span> <span class="o">*</span><span class="n">attrString</span> <span class="o">=</span> <span class="p">[[</span><span class="n">NSAttributedString</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithData:</span><span class="p">[</span><span class="n">html</span> <span class="nl">dataUsingEncoding:</span><span class="n">NSUTF8StringEncoding</span><span class="p">]</span>
+</span><span class='line'>                                                                  <span class="nl">options:</span><span class="n">options</span>
+</span><span class='line'>                                                       <span class="nl">documentAttributes:</span><span class="nb">nil</span>
+</span><span class='line'>                                                                    <span class="nl">error:</span><span class="nb">nil</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>同样你也可以通过NSAttributedString获得HTML文本:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">NSAttributedString</span> <span class="o">*</span><span class="n">attrString</span><span class="p">;</span> <span class="c1">// from previous code</span>
+</span><span class='line'><span class="n">NSDictionary</span> <span class="o">*</span><span class="n">options</span> <span class="o">=</span> <span class="err">@</span><span class="p">{</span><span class="nl">NSDocumentTypeDocumentAttribute:</span> <span class="n">NSHTMLTextDocumentType</span><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">NSData</span> <span class="o">*</span><span class="n">htmlData</span> <span class="o">=</span> <span class="p">[</span><span class="n">attrString</span> <span class="nl">dataFromRange:</span><span class="n">NSMakeRange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="n">attrString</span> <span class="n">length</span><span class="p">])</span> <span class="nl">documentAttributes:</span><span class="n">options</span> <span class="nl">error:</span><span class="nb">nil</span><span class="p">];</span>
+</span><span class='line'><span class="n">NSString</span> <span class="o">*</span><span class="n">htmlString</span> <span class="o">=</span> <span class="p">[[</span><span class="n">NSString</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithData:</span><span class="n">htmlData</span> <span class="nl">encoding:</span><span class="n">NSUTF8StringEncoding</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>但是再享受NSAttributedString带来方便的同时,我们也会遇到些令人头痛的小麻烦&hellip;</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/05/08/ios-nsattributedstring-calculate-height/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -209,6 +293,10 @@
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/05/08/ios-nsattributedstring-calculate-height/">NSAttributedString 计算高度的天坑&#8230;</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/04/28/translation-nshipter-nscoding/">[译文]NSCoding / NSKeyedArchiver</a>
